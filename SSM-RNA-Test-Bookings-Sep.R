@@ -1,4 +1,3 @@
-
 #install.packages("XML")
 #install.packages("RSelenium")
 #install.packages("ggplot2")
@@ -9,44 +8,45 @@
 #install.packages("reshape")
 
 
-library(rvest)
-library(data.table)
-library(httr)
-library(XML)
-library(RSelenium)
-mybrowser <- rsDriver(browser = 'firefox', verbose = TRUE, port=4546L,)
-
-link <- "https://eservice.ssm.gov.mo/aptmon/aptmon/ch"
-mybrowser$client$navigate(link)
-
-#mybrowser$client$findElement(using = 'id', "tblist")$getElementText()
-html.table.0 <-  mybrowser$client$findElement(using = 'id', "tblist")
-webElem5txt.0 <- html.table.0$getElementAttribute("outerHTML")[[1]]
-
-#read_html(webElem5txt.0) %>% html_nodes('div.hidden-xs') %>% html_text(trim = TRUE)
-df.table.0 <-  read_html(webElem5txt.0) %>% html_table() %>% data.frame(.)
-df.table.0$地點 <- read_html(webElem5txt.0) %>% html_nodes('div.hidden-xs') %>% html_text(trim = TRUE)
-station <- df.table.0[,c(1:4,7,5,6)]
-
-#head(station)
-#summary(station)
-
-write.csv(station,paste("station-",format(Sys.time(), "%Y%m%d%H%M%S"),".csv", sep = ""), row.names = TRUE)
-
-# to close the browser
-mybrowser$client$close()
-# to close the server
-mybrowser$server$stop()
-
-
-
-
 library(readxl)
 library(dplyr)
 library(reshape)
 library(ggplot2)
 library(stringr)
 #library(xlsx)
+
+
+scrp1 <- read.csv("aptmon-scraping/station-20210926202025.csv", na = "---")
+scrp2 <- read.csv("aptmon-scraping/station-20210926230837.csv", na = "---")
+scrp3 <- read.csv("aptmon-scraping/station-20210927093840.csv", na = "---")
+scrp4 <- read.csv("aptmon-scraping/station-20210927195730.csv", na = "---")
+
+scrp1$DateTime <- as.POSIXct(strptime("20210926202025","%Y%m%d%H%M%S"))
+scrp2$DateTime <- as.POSIXct(strptime("20210926230837","%Y%m%d%H%M%S"))
+scrp3$DateTime <- as.POSIXct(strptime("20210927093840","%Y%m%d%H%M%S"))
+scrp4$DateTime <- as.POSIXct(strptime("20210927195730","%Y%m%d%H%M%S"))
+
+scrp <- rbind(scrp1,scrp2,scrp3,scrp4)
+
+#head(scrp)
+#filter(scrp, 地點 == "街坊會聯合總會社區服務大樓")
+
+station <- scrp %>% group_by(序號,地點,類別) %>%
+      summarise(
+            口採樣點.mean = mean(口採樣點, na.rm = TRUE),
+            鼻採樣點.mean = mean(鼻採樣點, na.rm = TRUE),
+            口採樣點.median = median(口採樣點, na.rm = TRUE),
+            鼻採樣點.median = median(鼻採樣點, na.rm = TRUE),
+            口採樣點.min = min(口採樣點, na.rm = TRUE),
+            鼻採樣點.min = min(鼻採樣點, na.rm = TRUE),
+            口採樣點.max = max(口採樣點, na.rm = TRUE),
+            鼻採樣點.max = max(鼻採樣點, na.rm = TRUE)
+      ) %>% as.data.frame()
+
+colnames(station)[which(names(station) == "地點")] <- "Location"
+head(station)
+
+
 
 download.file('https://www.ssm.gov.mo/docs/stat/apt/RNA010.xlsx', 'RNA010.xlsx', method='curl' )
 
@@ -148,19 +148,36 @@ sapply(strsplit(substr(df$預約時段,1,5),":"),
 )
 
 
-station$Location <- station$地點
-sdf <- station[c(8,1,3,4,5), ]
-mdf <- merge(sdf, df, by = "Location")
-mdf$ReservationPerStation <- ifelse(mdf$variable == "口咽拭",mdf$value/ifelse(mdf$口採樣點==0,1,mdf$口採樣點),mdf$value/ifelse(mdf$鼻採樣點==0,1,mdf$鼻採樣點))
-fdf <- filter(mdf, ReservationDateTime <= Sys.time())
-summary(fdf)
+mdf <- merge(station[1:5], df, by = "Location")
+mdf$ReservationPerStation <- ifelse(
+      mdf$variable == "口咽拭",
+      mdf$value/mdf$口採樣點.mean,
+      mdf$value/mdf$鼻採樣點.mean
+      )
+summary(mdf)
 
-#summary(df)
-#summary(mdf)
+
+#fdf <- filter(mdf, ReservationDateTime <= Sys.time())
 #filter(df, Location == "北安客運碼頭")
 #filter(mdf, Location == "北安客運碼頭")
 #head(df)
 #df[is.na(df)] <- 0
+
+
+sum(mdf$value,na.rm = TRUE)
+
+mdf %>% group_by(Location) %>%
+  tally(value) %>% top_n(5)
+
+mdf %>% group_by(Location,預約日期) %>%
+      tally(value) %>% top_n(1) %>% as.data.frame() %>% top_n(5)
+
+mdf %>% group_by(Location) %>%
+  tally(value) %>% top_n(-5)
+
+mdf %>% group_by(Location,預約日期) %>%
+      tally(value) %>% top_n(-1) %>% as.data.frame() %>% top_n(-8)
+
 
 
 gdf <- df %>% group_by(ReservationTime,variable) %>%
@@ -170,10 +187,10 @@ geom_line(stat = "identity", aes(color = variable)) +
 facet_grid(variable~. )
 
 
-gdf <- df %>% group_by(ReservationTime,預約日期,variable) %>%
-      summarise(value.sum = sum(value, na.rm = TRUE))
-ggplot(gdf,aes(x = ReservationTime, y = value.sum)) +
-geom_line(stat = "identity", aes(color = variable)) +
+gdf <- df %>% group_by(ReservationTime,預約日期) %>%
+      summarise(value.sum = sum(value, na.rm = TRUE)) %>% as.data.frame()
+ggplot(gdf,aes(x = ReservationTime, y = value.sum, color = value.sum)) +
+geom_line() +
 facet_grid(預約日期~. )
 
 
@@ -205,5 +222,3 @@ ggplot(gdf,aes(x = ReservationCalendarTime, y = value.sum)) +
 geom_line(stat = "identity", aes(color = variable)) +
 facet_wrap(~Location, nrow = 6, ncol = 8) +
 ggtitle("RNA test per sampling method by location") + xlab("All intervals") + ylab("Total test")
-
-top_n(gdf, 5)

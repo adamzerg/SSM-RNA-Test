@@ -8,10 +8,11 @@ library(httpuv)
 
 port <- randomPort(min = 1024L, max = 49151L, host = "127.0.0.1", n = 20)
 mybrowser <- rsDriver(browser = 'firefox', verbose = TRUE, port = port)
-Sys.sleep(5)
+Sys.sleep(10)
 
 link <- "https://eservice.ssm.gov.mo/aptmon/aptmon/ch"
 mybrowser$client$navigate(link)
+Sys.sleep(60)
 
 #mybrowser$client$findElement(using = 'id', "tblist")$getElementText()
 html.table.0 <-  mybrowser$client$findElement(using = 'id', "tblist")
@@ -25,9 +26,11 @@ station <- df.table.0[,c(1:4,7,5,6)]
 #head(station)
 #summary(station)
 
+Sys.sleep(10)
+
 write.csv(station,paste("D:/Documents/GitHub/ssm-rna-test/aptmon-scraping/station-",format(Sys.time(), "%Y%m%d%H%M%S"),".csv", sep = ""), row.names = TRUE)
 
-Sys.sleep(3)
+Sys.sleep(10)
 
 # to close the browser
 mybrowser$client$close()
