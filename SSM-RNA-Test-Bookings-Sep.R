@@ -14,7 +14,7 @@ library(data.table)
 library(httr)
 library(XML)
 library(RSelenium)
-mybrowser <- rsDriver(browser = 'firefox', verbose = TRUE, port=4569L,)
+mybrowser <- rsDriver(browser = 'firefox', verbose = TRUE, port=4546L,)
 
 link <- "https://eservice.ssm.gov.mo/aptmon/aptmon/ch"
 mybrowser$client$navigate(link)
@@ -32,9 +32,11 @@ station <- df.table.0[,c(1:4,7,5,6)]
 #summary(station)
 
 write.csv(station,paste("station-",format(Sys.time(), "%Y%m%d%H%M%S"),".csv", sep = ""), row.names = TRUE)
+
+# to close the browser
+mybrowser$client$close()
+# to close the server
 mybrowser$server$stop()
-
-
 
 
 

@@ -23,7 +23,7 @@ output:
 
 
 ```r
-mybrowser <- rsDriver(browser = 'firefox', verbose = TRUE, port=4541L,)
+mybrowser <- rsDriver(browser = 'firefox', verbose = TRUE, port=4545L,)
 ```
 
 
@@ -48,47 +48,47 @@ station
 ## 2   A02                           慈幼中學        1        1    A
 ## 3   A03                   望廈體育中心三樓        1        1    A
 ## 4   A04                      塔石體育館B館        1        1    A
-## 5   A05                       澳門坊眾學校        2        1    A
-## 6   A06     奧林匹克體育中心運動場乒乓球室        0        1    A
+## 5   A05                       澳門坊眾學校        3        3    A
+## 6   A06     奧林匹克體育中心運動場乒乓球室        1        0    A
 ## 7   A07                     石排灣公立學校        1        0    A
-## 8   B01               聖若瑟教區中學第六校        4        3    B
+## 8   B01               聖若瑟教區中學第六校        2        2    B
 ## 9   B02                     青洲坊活動中心        2        2    B
-## 10  B03                     鄭觀應公立學校        1        1    B
-## 11  B04                         工人體育場        5        5    B
-## 12  B05                 鏡平學校（中學部）        4        3    B
+## 10  B03                     鄭觀應公立學校        2        3    B
+## 11  B04                         工人體育場        7        7    B
+## 12  B05                 鏡平學校（中學部）        5        6    B
 ## 13  B06             中葡職業技術學校體育館        6        3    B
-## 14  B07                   健康生活教育園地        4        3    B
-## 15  B08                     鮑思高粵華小學        3        1    B
-## 16  B09                    望廈體育中心1樓        2        6    B
-## 17  B10                           廣大中學        2        1    B
-## 18  B11                 勞校中學附屬幼稚園        2        2    B
-## 19  B12           婦女聯合總會綜合服務大樓        2        2    B
+## 14  B07                   健康生活教育園地        4        2    B
+## 15  B08                     鮑思高粵華小學        2        3    B
+## 16  B09                    望廈體育中心1樓        4        7    B
+## 17  B10                           廣大中學        4        2    B
+## 18  B11                 勞校中學附屬幼稚園        3        2    B
+## 19  B12           婦女聯合總會綜合服務大樓        1        2    B
 ## 20  B13                       鏡湖醫院禮堂        4        4    B
 ## 21  B14                     沙梨頭活動中心        4        3    B
-## 22  B15                           培正中學        3        3    B
-## 23  B16                      塔石體育館A館        4        3    B
+## 22  B15                           培正中學        4        3    B
+## 23  B16                      塔石體育館A館        4        2    B
 ## 24  B17           澳門理工學院懷遠樓展覽廳        4        4    B
-## 25  B18                       澳門文化中心        2        2    B
-## 26  B19                         利瑪竇中學        2        2    B
-## 27  B20               聖若瑟教區中學第二校        2        1    B
-## 28  B21                           海星中學        2        2    B
-## 29  B22 奧林匹克體育中心-運動場-室內體育館        2        1    B
-## 30  B23                           嘉模會堂        1        1    B
+## 25  B18                       澳門文化中心        4        5    B
+## 26  B19                         利瑪竇中學        4        4    B
+## 27  B20               聖若瑟教區中學第二校        1        2    B
+## 28  B21                           海星中學        5        2    B
+## 29  B22 奧林匹克體育中心-運動場-室內體育館        3        2    B
+## 30  B23                           嘉模會堂        2        1    B
 ## 31  B24                       北安客運碼頭        2        0    B
-## 32  B25          教青局親職教育中心 (湖畔)        2        2    B
-## 33  B26               澳門保安部隊高等學校        3        2    B
+## 32  B25          教青局親職教育中心 (湖畔)        4        4    B
+## 33  B26               澳門保安部隊高等學校        2        2    B
 ## 34  B27   街總石排灣家庭及社區綜合服務中心        4        2    B
-## 35  B28                           澳門大學        1        1    B
-## 36  B29                       澳門威尼斯人        5        2    B
-## 37  B30                澳門東亞運體育館A館        1        1    B
-## 38  B31                         科大體育館        3        3    B
+## 35  B28                           澳門大學        1        2    B
+## 36  B29                       澳門威尼斯人        6        3    B
+## 37  B30                澳門東亞運體育館A館        3        3    B
+## 38  B31                         科大體育館        2        2    B
 ## 39  C01                             綜藝館        1        1    C
 ## 40  C02               國檢（澳門）醫務中心        2        2    C
 ## 41  C03                         金沙娛樂場        1        0    C
 ## 42  C04                         新葡京酒店        1        0    C
 ## 43  C05                             美高梅        1        0    C
 ## 44  C06                           永利澳門        1        0    C
-## 45  C07                           星際酒店        0        0    C
+## 45  C07                           星際酒店        1        0    C
 ## 46  C08                       澳門國際機場        0        0    C
 ## 47  C09                       澳門科大醫院        1        1    C
 ## 48  C10                           永利皇宮        1        0    C
@@ -221,12 +221,12 @@ summary(df)
 ##                                                                               
 ##      value        ReservationDateTime           ReservationCalendarTime      
 ##  Min.   :  1.00   Min.   :2021-09-25 15:00:00   Min.   :2021-09-25 15:00:00  
-##  1st Qu.: 17.00   1st Qu.:2021-09-26 09:00:00   1st Qu.:2021-09-26 09:00:00  
-##  Median : 46.00   Median :2021-09-27 03:00:00   Median :2021-09-27 03:00:00  
-##  Mean   : 59.01   Mean   :2021-09-27 03:00:12   Mean   :2021-09-27 03:00:12  
-##  3rd Qu.: 84.00   3rd Qu.:2021-09-27 21:00:00   3rd Qu.:2021-09-27 21:00:00  
+##  1st Qu.: 18.00   1st Qu.:2021-09-26 09:00:00   1st Qu.:2021-09-26 09:00:00  
+##  Median : 49.00   Median :2021-09-27 03:00:00   Median :2021-09-27 03:00:00  
+##  Mean   : 61.09   Mean   :2021-09-27 03:00:12   Mean   :2021-09-27 03:00:12  
+##  3rd Qu.: 86.00   3rd Qu.:2021-09-27 21:00:00   3rd Qu.:2021-09-27 21:00:00  
 ##  Max.   :557.00   Max.   :2021-09-28 15:30:00   Max.   :2021-09-28 15:30:00  
-##  NA's   :515                                                                 
+##  NA's   :522                                                                 
 ##  ReservationTime
 ##  Min.   : 0.00  
 ##  1st Qu.: 6.00  
@@ -238,7 +238,7 @@ summary(df)
 ```
 
 
-## 數據再整合  
+## 數據整合  
 
 1. 轉化地點信息  
 
@@ -252,7 +252,7 @@ sdf <- station[c(8,1,3,4,5), ]
 mdf <- merge(sdf, df, by = "Location")
 ```
 
-將預約數除以採樣點數，用以表達測試壓力  
+每採樣點預約數，用以表達測試壓力  
 
 
 ```r
@@ -262,37 +262,37 @@ summary(mdf)
 
 ```
 ##    Location             序號               地點              口採樣點
-##  Length:290         Length:290         Length:290         Min.   :4  
-##  Class :character   Class :character   Class :character   1st Qu.:4  
-##  Mode  :character   Mode  :character   Mode  :character   Median :4  
-##                                                           Mean   :4  
-##                                                           3rd Qu.:4  
-##                                                           Max.   :4  
+##  Length:290         Length:290         Length:290         Min.   :2  
+##  Class :character   Class :character   Class :character   1st Qu.:2  
+##  Mode  :character   Mode  :character   Mode  :character   Median :2  
+##                                                           Mean   :2  
+##                                                           3rd Qu.:2  
+##                                                           Max.   :2  
 ##                                                                      
 ##     鼻採樣點     類別              預約日期            預約時段        
-##  Min.   :3   Length:290         Min.   :2021-09-25   Length:290        
-##  1st Qu.:3   Class :character   1st Qu.:2021-09-26   Class :character  
-##  Median :3   Mode  :character   Median :2021-09-27   Mode  :character  
-##  Mean   :3                      Mean   :2021-09-26                     
-##  3rd Qu.:3                      3rd Qu.:2021-09-27                     
-##  Max.   :3                      Max.   :2021-09-28                     
+##  Min.   :2   Length:290         Min.   :2021-09-25   Length:290        
+##  1st Qu.:2   Class :character   1st Qu.:2021-09-26   Class :character  
+##  Median :2   Mode  :character   Median :2021-09-27   Mode  :character  
+##  Mean   :2                      Mean   :2021-09-26                     
+##  3rd Qu.:2                      3rd Qu.:2021-09-27                     
+##  Max.   :2                      Max.   :2021-09-28                     
 ##                                                                        
 ##    variable             value        ReservationDateTime          
 ##  Length:290         Min.   :  1.00   Min.   :2021-09-25 15:00:00  
-##  Class :character   1st Qu.:  9.00   1st Qu.:2021-09-26 09:00:00  
-##  Mode  :character   Median : 26.00   Median :2021-09-27 03:00:00  
-##                     Mean   : 46.49   Mean   :2021-09-27 03:00:12  
-##                     3rd Qu.: 73.50   3rd Qu.:2021-09-27 21:00:00  
+##  Class :character   1st Qu.: 13.75   1st Qu.:2021-09-26 09:00:00  
+##  Mode  :character   Median : 35.00   Median :2021-09-27 03:00:00  
+##                     Mean   : 50.07   Mean   :2021-09-27 03:00:12  
+##                     3rd Qu.: 74.00   3rd Qu.:2021-09-27 21:00:00  
 ##                     Max.   :198.00   Max.   :2021-09-28 15:30:00  
-##                     NA's   :19                                    
+##                     NA's   :22                                    
 ##  ReservationCalendarTime       ReservationTime ReservationPerStation
-##  Min.   :2021-09-25 15:00:00   Min.   : 0.00   Min.   : 0.250       
-##  1st Qu.:2021-09-26 09:00:00   1st Qu.: 6.00   1st Qu.: 2.667       
-##  Median :2021-09-27 03:00:00   Median :12.00   Median : 8.000       
-##  Mean   :2021-09-27 03:00:12   Mean   :11.78   Mean   :12.869       
-##  3rd Qu.:2021-09-27 21:00:00   3rd Qu.:17.50   3rd Qu.:20.958       
-##  Max.   :2021-09-28 15:30:00   Max.   :23.50   Max.   :49.500       
-##                                                NA's   :19
+##  Min.   :2021-09-25 15:00:00   Min.   : 0.00   Min.   : 0.500       
+##  1st Qu.:2021-09-26 09:00:00   1st Qu.: 6.00   1st Qu.: 6.875       
+##  Median :2021-09-27 03:00:00   Median :12.00   Median :17.500       
+##  Mean   :2021-09-27 03:00:12   Mean   :11.78   Mean   :25.035       
+##  3rd Qu.:2021-09-27 21:00:00   3rd Qu.:17.50   3rd Qu.:37.000       
+##  Max.   :2021-09-28 15:30:00   Max.   :23.50   Max.   :99.000       
+##                                                NA's   :22
 ```
 
 ## 圖繪製  
@@ -321,7 +321,9 @@ facet_grid(預約日期~. )
 
 
 ```r
-gdf <- mdf %>% group_by(Location,ReservationCalendarTime,variable) %>%
+fdf <- filter(mdf, ReservationDateTime <= Sys.time())
+fdf <- filter(mdf, Location == "澳門威尼斯人")
+gdf <- fdf %>% group_by(Location,ReservationCalendarTime,variable) %>%
       summarise(value.sum = sum(value, na.rm = TRUE))
 ```
 
@@ -332,7 +334,7 @@ gdf <- mdf %>% group_by(Location,ReservationCalendarTime,variable) %>%
 ```r
 ggplot(gdf,aes(x = ReservationCalendarTime, y = value.sum)) +
 geom_line(stat = "identity", aes(color = variable)) +
-facet_wrap(~Location, nrow = 8, ncol = 4) +
+#facet_wrap(~Location, nrow = 8, ncol = 4) +
 ggtitle("RNA test per sampling method by location") + xlab("All intervals") + ylab("Total test")
 ```
 
@@ -342,7 +344,9 @@ ggtitle("RNA test per sampling method by location") + xlab("All intervals") + yl
 
 
 ```r
-gdf <- mdf %>% group_by(Location,ReservationTime,variable) %>%
+fdf <- filter(mdf, ReservationDateTime <= Sys.time())
+fdf <- filter(mdf, Location == "澳門威尼斯人")
+gdf <- fdf %>% group_by(Location,ReservationTime,variable) %>%
       summarise(value.mean = mean(ReservationPerStation, na.rm = TRUE))
 ```
 
@@ -353,7 +357,7 @@ gdf <- mdf %>% group_by(Location,ReservationTime,variable) %>%
 ```r
 ggplot(gdf,aes(x = ReservationTime, y = value.mean)) +
 geom_line(stat = "identity", aes(color = variable)) +
-facet_wrap(~Location, nrow = 8, ncol = 4) +
+#facet_wrap(~Location, nrow = 8, ncol = 4) +
 ggtitle("RNA test per sampling method by location") + xlab("24 hours") + ylab("Average test per station")
 ```
 

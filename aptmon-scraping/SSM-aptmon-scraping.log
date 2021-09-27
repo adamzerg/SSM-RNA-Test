@@ -1,0 +1,107 @@
+Warning message:
+程辑包'XML'是用R版本4.1.1 来建造的 
+Warning message:
+程辑包'RSelenium'是用R版本4.1.1 来建造的 
+Warning message:
+程辑包'netstat'是用R版本4.1.1 来建造的 
+
+载入程辑包：'httpuv'
+
+The following object is masked from 'package:RSelenium':
+
+    startServer
+
+Warning message:
+程辑包'httpuv'是用R版本4.1.1 来建造的 
+checking Selenium Server versions:
+BEGIN: PREDOWNLOAD
+BEGIN: DOWNLOAD
+BEGIN: POSTDOWNLOAD
+checking chromedriver versions:
+BEGIN: PREDOWNLOAD
+BEGIN: DOWNLOAD
+BEGIN: POSTDOWNLOAD
+checking geckodriver versions:
+BEGIN: PREDOWNLOAD
+BEGIN: DOWNLOAD
+BEGIN: POSTDOWNLOAD
+checking phantomjs versions:
+BEGIN: PREDOWNLOAD
+BEGIN: DOWNLOAD
+BEGIN: POSTDOWNLOAD
+[1] "Connecting to remote server"
+$acceptInsecureCerts
+[1] FALSE
+
+$browserName
+[1] "firefox"
+
+$browserVersion
+[1] "92.0"
+
+$`moz:accessibilityChecks`
+[1] FALSE
+
+$`moz:buildID`
+[1] "20210903235534"
+
+$`moz:geckodriverVersion`
+[1] "0.30.0"
+
+$`moz:headless`
+[1] FALSE
+
+$`moz:processID`
+[1] 24820
+
+$`moz:profile`
+[1] "C:\\Users\\adam\\AppData\\Local\\Temp\\rust_mozprofileo6CcUh"
+
+$`moz:shutdownTimeout`
+[1] 60000
+
+$`moz:useNonSpecCompliantPointerOrigin`
+[1] FALSE
+
+$`moz:webdriverClick`
+[1] TRUE
+
+$pageLoadStrategy
+[1] "normal"
+
+$platformName
+[1] "windows"
+
+$platformVersion
+[1] "10.0"
+
+$proxy
+named list()
+
+$setWindowRect
+[1] TRUE
+
+$strictFileInteractability
+[1] FALSE
+
+$timeouts
+$timeouts$implicit
+[1] 0
+
+$timeouts$pageLoad
+[1] 300000
+
+$timeouts$script
+[1] 30000
+
+
+$unhandledPromptBehavior
+[1] "dismiss and notify"
+
+$webdriver.remote.sessionid
+[1] "1584da48-197b-412e-a21e-5438b75eac58"
+
+$id
+[1] "1584da48-197b-412e-a21e-5438b75eac58"
+
+[1] TRUE

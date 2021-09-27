@@ -34,7 +34,7 @@ library(stringr)
 1. Rselenimu 採集頁面容器內的表標記，對地點作簡化處理  
 
 ```{r Rselenium-connection, echo=TRUE, results = 'hide', message=FALSE}
-mybrowser <- rsDriver(browser = 'firefox', verbose = TRUE, port=4541L,)
+mybrowser <- rsDriver(browser = 'firefox', verbose = TRUE, port=4545L,)
 ```
 
 ```{r Rselenium-scraping-dataset1, message=FALSE}
@@ -159,7 +159,7 @@ summary(df)
 ```
 
 
-## 數據再整合  
+## 數據整合  
 
 1. 轉化地點信息  
 
@@ -172,7 +172,7 @@ sdf <- station[c(8,1,3,4,5), ]
 mdf <- merge(sdf, df, by = "Location")
 ```
 
-將預約數除以採樣點數，用以表達測試壓力  
+每採樣點預約數，用以表達測試壓力  
 
 ```{r per-station-per-sampling-method}
 mdf$ReservationPerStation <- ifelse(mdf$variable == "口咽拭",mdf$value/ifelse(mdf$口採樣點==0,1,mdf$口採樣點),mdf$value/ifelse(mdf$鼻採樣點==0,1,mdf$鼻採樣點))
@@ -194,21 +194,25 @@ facet_grid(預約日期~. )
 2. 截至當下，各站測試總數，澳門威尼斯人及工人體育館排名前一二
 
 ```{r alltime-test-total-plot}
-gdf <- mdf %>% group_by(Location,ReservationCalendarTime,variable) %>%
+fdf <- filter(mdf, ReservationDateTime <= Sys.time())
+fdf <- filter(mdf, Location == "澳門威尼斯人")
+gdf <- fdf %>% group_by(Location,ReservationCalendarTime,variable) %>%
       summarise(value.sum = sum(value, na.rm = TRUE))
 ggplot(gdf,aes(x = ReservationCalendarTime, y = value.sum)) +
 geom_line(stat = "identity", aes(color = variable)) +
-facet_wrap(~Location, nrow = 8, ncol = 4) +
+#facet_wrap(~Location, nrow = 8, ncol = 4) +
 ggtitle("RNA test per sampling method by location") + xlab("All intervals") + ylab("Total test")
 ```
 
 3. 每站點24小時日間均值，低數值表示負荷壓力小，澳門威尼斯人因測試站數達10個，測試總數居高的同時，每半小時測試均值僅需 10-20，較為快速   
 
 ```{r 24hr-test-mean-plot}
-gdf <- mdf %>% group_by(Location,ReservationTime,variable) %>%
+fdf <- filter(mdf, ReservationDateTime <= Sys.time())
+fdf <- filter(mdf, Location == "澳門威尼斯人")
+gdf <- fdf %>% group_by(Location,ReservationTime,variable) %>%
       summarise(value.mean = mean(ReservationPerStation, na.rm = TRUE))
 ggplot(gdf,aes(x = ReservationTime, y = value.mean)) +
 geom_line(stat = "identity", aes(color = variable)) +
-facet_wrap(~Location, nrow = 8, ncol = 4) +
+#facet_wrap(~Location, nrow = 8, ncol = 4) +
 ggtitle("RNA test per sampling method by location") + xlab("24 hours") + ylab("Average test per station")
 ```
