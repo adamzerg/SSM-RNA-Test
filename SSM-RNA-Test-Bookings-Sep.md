@@ -235,48 +235,51 @@ ggplot(data=p4, mapping = aes(x = reorder(paste(Location,預約日期),n), n)) +
 
 ![](SSM-RNA-Test-Bookings-Sep_files/figure-html/top-5-perday-booking-location-1.png)<!-- -->
 
-6. 澳門威尼斯人及工人體育館排名前
-
+6. 預約總數的排名中，前二澳門威尼斯人及工人體育館顯現下午三時後的預約增長最為突出
 
 ```r
-p5 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育館")) %>%
-      group_by(Location,ReservationCalendarTime,variable) %>%
+p5 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+      group_by(Location,ReservationTime) %>%
       summarise(value.sum = sum(value, na.rm = TRUE))
+p6 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+      group_by(Location,ReservationTime) %>%
+      summarise(ReservationPerStation = mean(ReservationPerStation, na.rm = TRUE))
+
+g1 <- ggplot(p5,aes(x = ReservationTime, y = value.sum, color = Location)) +
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+g2 <- ggplot(p6,aes(x = ReservationTime, y = ReservationPerStation, color = Location)) +
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+
+grid.arrange(g1,g2,nrow=2)
 ```
 
-```
-## `summarise()` has grouped output by 'Location', 'ReservationCalendarTime'. You can override using the `.groups` argument.
-```
+![](SSM-RNA-Test-Bookings-Sep_files/figure-html/24hr-test-plot-1.png)<!-- -->
 
-```r
-ggplot(p5,aes(x = ReservationCalendarTime, y = value.sum)) +
-geom_line(stat = "identity", aes(color = variable)) +
-#facet_wrap(~Location, nrow = 8, ncol = 4) +
-facet_grid(Location~.) +
-ggtitle("RNA test per sampling method by location") + xlab("All intervals") + ylab("Total test")
-```
-
-![](SSM-RNA-Test-Bookings-Sep_files/figure-html/alltime-test-total-plot-1.png)<!-- -->
-
-7. 每站點24小時日間均值，低數值表示負荷壓力小，澳門威尼斯人測試站預約總數高，每半小時測試均值 20-40，較為快速   
+7. 三日內的預約觀察看，預約總量與每站點的負荷成正比增長   
 
 
 ```r
-p6 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育館")) %>%
-      group_by(Location,ReservationTime,variable) %>%
-      summarise(value.mean = mean(ReservationPerStation, na.rm = TRUE))
+p7 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+      group_by(Location,ReservationCalendarTime) %>%
+      summarise(value.sum = sum(value, na.rm = TRUE))
+p8 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+      group_by(Location,ReservationCalendarTime) %>%
+      summarise(ReservationPerStation.mean = mean(ReservationPerStation, na.rm = TRUE))
+
+g1 <- ggplot(p7,aes(x = ReservationCalendarTime, y = value.sum, color = Location)) +
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+g2 <- ggplot(p8,aes(x = ReservationCalendarTime, y = ReservationPerStation.mean, color = Location)) +
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+
+grid.arrange(g1,g2,nrow=2)
 ```
 
 ```
-## `summarise()` has grouped output by 'Location', 'ReservationTime'. You can override using the `.groups` argument.
+## Warning: Removed 26 rows containing non-finite values (stat_smooth).
 ```
 
-```r
-ggplot(p6,aes(x = ReservationTime, y = value.mean)) +
-geom_line(stat = "identity", aes(color = variable)) +
-#facet_wrap(~Location, nrow = 8, ncol = 4) +
-facet_grid(Location~.) +
-ggtitle("RNA test per sampling method by location") + xlab("24 hours") + ylab("Average test per station")
+```
+## Warning: Removed 26 rows containing missing values (geom_point).
 ```
 
-![](SSM-RNA-Test-Bookings-Sep_files/figure-html/24hr-test-mean-plot-1.png)<!-- -->
+![](SSM-RNA-Test-Bookings-Sep_files/figure-html/alltime-test-plot-1.png)<!-- -->

@@ -13,7 +13,7 @@ library(dplyr)
 library(reshape)
 library(ggplot2)
 library(stringr)
-
+library(gridExtra)
 
 scrp1 <- read.csv("aptmon-scraping/station-20210926202025.csv", na = "---")
 scrp2 <- read.csv("aptmon-scraping/station-20210926230837.csv", na = "---")
@@ -224,18 +224,53 @@ geom_line(stat = "identity", aes(color = variable)) +
 facet_wrap(~Location, nrow = 6, ncol = 8) +
 ggtitle("RNA test per sampling method by location") + xlab("4 days") + ylab("Average test per station")
 
-
 ggplot(mdf,aes(x = ReservationCalendarTime, y = ReservationPerStation)) +
 geom_line(stat = "identity", aes(color = variable)) +
 facet_wrap(~Location, nrow = 6, ncol = 8) +
 ggtitle("RNA test per sampling method by location") + xlab("All intervals") + ylab("Average test per station")
 
+tail(p5)
 
-
-
-p5 <- filter(mdf, Location == "澳門威尼斯人") %>%
-      group_by(ReservationTime,variable) %>%
-      summarise(value.mean = mean(value, na.rm = TRUE))
-ggplot(p5,aes(x = ReservationTime, y = value.mean)) +
+p5 <- mdf %>%
+      group_by(Location,ReservationCalendarTime,variable) %>%
+      summarise(value.sum = sum(value, na.rm = TRUE))
+ggplot(p5,aes(x = ReservationCalendarTime, y = value.sum)) +
 geom_line(stat = "identity", aes(color = variable)) +
-ggtitle("RNA test per sampling method") + xlab("All intervals") + ylab("Average test")
+facet_wrap(~Location, ncol = 2) 
+
+#facet_wrap(~Location, nrow =2, ncol = 2) +
+#geom_line(stat = "identity", aes(color = Location)) +
+#geom_smooth(stat = "identity", aes(color = Location)) +
+#facet_grid(Location~.) +
+#ggtitle("RNA test per sampling method by location") + xlab("All intervals") + ylab("Total test")
+
+
+
+
+p5 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+      group_by(Location,ReservationTime) %>%
+      summarise(value.sum = sum(value, na.rm = TRUE))
+p6 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+      group_by(Location,ReservationTime) %>%
+      summarise(ReservationPerStation = mean(ReservationPerStation, na.rm = TRUE))
+
+g1 <- ggplot(p5,aes(x = ReservationTime, y = value.sum, color = Location)) +
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+g2 <- ggplot(p6,aes(x = ReservationTime, y = ReservationPerStation, color = Location)) +
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+
+grid.arrange(g1,g2,nrow=2)
+
+p7 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+      group_by(Location,ReservationCalendarTime) %>%
+      summarise(value.sum = sum(value, na.rm = TRUE))
+p8 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+      group_by(Location,ReservationCalendarTime) %>%
+      summarise(ReservationPerStation.mean = mean(ReservationPerStation, na.rm = TRUE))
+
+g1 <- ggplot(p7,aes(x = ReservationCalendarTime, y = value.sum, color = Location)) +
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+g2 <- ggplot(p8,aes(x = ReservationCalendarTime, y = ReservationPerStation.mean, color = Location)) +
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+
+grid.arrange(g1,g2,nrow=2)
