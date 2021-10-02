@@ -255,9 +255,13 @@ p6 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門
       summarise(ReservationPerStation = mean(ReservationPerStation, na.rm = TRUE))
 
 g1 <- ggplot(p5,aes(x = ReservationTime, y = value.sum, color = Location)) +
-geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3) +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
 g2 <- ggplot(p6,aes(x = ReservationTime, y = ReservationPerStation, color = Location)) +
-geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3) +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
 
 grid.arrange(g1,g2,nrow=2)
 
@@ -269,8 +273,12 @@ p8 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門
       summarise(ReservationPerStation.mean = mean(ReservationPerStation, na.rm = TRUE))
 
 g1 <- ggplot(p7,aes(x = ReservationCalendarTime, y = value.sum, color = Location)) +
-geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3) +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
 g2 <- ggplot(p8,aes(x = ReservationCalendarTime, y = ReservationPerStation.mean, color = Location)) +
-geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3)
+geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3) +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
 
 grid.arrange(g1,g2,nrow=2)
