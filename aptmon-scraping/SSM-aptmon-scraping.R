@@ -20,8 +20,10 @@ webElem5txt.0 <- html.table.0$getElementAttribute("outerHTML")[[1]]
 
 #read_html(webElem5txt.0) %>% html_nodes('div.hidden-xs') %>% html_text(trim = TRUE)
 df.table.0 <-  read_html(webElem5txt.0) %>% html_table() %>% data.frame(.)
-df.table.0$地點 <- read_html(webElem5txt.0) %>% html_nodes('div.hidden-xs') %>% html_text(trim = TRUE)
-station <- df.table.0[,c(1:4,7,5,6)]
+Sys.sleep(5)
+
+df.table.0$Location <- read_html(webElem5txt.0) %>% html_nodes('div.hidden-xs') %>% html_text(trim = TRUE)
+station <- df.table.0
 
 #head(station)
 #summary(station)
