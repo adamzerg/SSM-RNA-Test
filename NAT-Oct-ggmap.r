@@ -15,7 +15,8 @@ library(stringr)
 
 paths <- dir('aptmon-scraping/', full.names=TRUE)
 locationfilename <- tail(paths, 1)
-filetime <- strptime(sub(".csv", "",sub(".*-", "", locationfilename)),"%Y%m%d%H%M%S")
+filetimestr <- sub(".csv", "",sub(".*-", "", locationfilename))
+filetime <- strptime(filetimestr,"%Y%m%d%H%M%S")
 filectime <- tail(file.info(paths)$ctime, 1)
 
 scrp <- read.csv(locationfilename, na = "---")
@@ -44,7 +45,7 @@ geom_text(colour = 'white', size = 4, check_overlap = T) +
 scale_size(range = c(0, 18), trans="reverse") +
 scale_color_viridis_d(option = "magma")
 
-png(file="NAT-Oct-ggmap.png", width = 700, height = 1400)
+png(file = paste("NAT-Oct-ggmap",filetimestr,".png"), width = 700, height = 1400)
 title <- paste("Macau 3rd Citywide NAT - waiting minutes as of",filectime)
 grid.arrange(plot1, plot2, nrow = 2, ncol = 1, top = textGrob(title))
 dev.off()
