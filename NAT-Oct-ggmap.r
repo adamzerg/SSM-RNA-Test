@@ -1,6 +1,6 @@
 # install.packages('ggmap')
 # this sets your google map for this session
-# register_google(key = "[your key]")
+# register_google(key = "AIzaSyD9z90fvzxmOhRzoNbxbwOmuIXI6CVKcTE")
 # ggmap_hide_api_key()
 
 
@@ -31,7 +31,7 @@ LonLat$area <- ifelse(LonLat$lat>=22.17,'macao','cotai,macao')
 
 macao <- filter(LonLat, area == 'macao')
 plot1 <- ggmap(get_map(location = "macao", zoom = 14), darken = .5, legend = "topleft", 
-base_layer = ggplot(data = macao, aes(x = lon, y = lat, label=Location))) +
+base_layer = ggplot(data = macao, aes(x = lon, y = lat, label=paste(Location,WaitingQueue,"人")))) +
 geom_point(aes(colour = 類別, size = WaitingMinutes, alpha = .2), data = macao) +
 geom_text(colour = 'white', size = 4, check_overlap = T) +
 scale_size(range = c(0, 18), trans="reverse") +
@@ -39,7 +39,7 @@ scale_color_viridis_d(option = "magma")
 
 cotai <- filter(LonLat, area == 'cotai,macao')
 plot2 <- ggmap(get_map(location = "cotai,macao", zoom = 14), darken = .5, legend = "topleft",
-base_layer = ggplot(data = cotai, aes(x = lon, y = lat, label=Location))) +
+base_layer = ggplot(data = cotai, aes(x = lon, y = lat, label=paste(Location,WaitingQueue,"人")))) +
 geom_point(aes(colour = 類別, size = WaitingMinutes, alpha = .2), data = cotai) +
 geom_text(colour = 'white', size = 4, check_overlap = T) +
 scale_size(range = c(0, 18), trans="reverse") +
