@@ -15,22 +15,35 @@ library(ggplot2)
 library(stringr)
 library(gridExtra)
 
-scrp1 <- read.csv("aptmon-scraping/station-20210926202025.csv", na = "---")
-scrp2 <- read.csv("aptmon-scraping/station-20210926230837.csv", na = "---")
-scrp3 <- read.csv("aptmon-scraping/station-20210927093840.csv", na = "---")
-scrp4 <- read.csv("aptmon-scraping/station-20210927195730.csv", na = "---")
 
-scrp1$DateTime <- as.POSIXct(strptime("20210926202025","%Y%m%d%H%M%S"))
-scrp2$DateTime <- as.POSIXct(strptime("20210926230837","%Y%m%d%H%M%S"))
-scrp3$DateTime <- as.POSIXct(strptime("20210927093840","%Y%m%d%H%M%S"))
-scrp4$DateTime <- as.POSIXct(strptime("20210927195730","%Y%m%d%H%M%S"))
+paths <- dir('aptmon-scraping/', full.names=TRUE)
+locationfilename <- tail(paths, 1)
+paths2 <- dir('RNA010/', full.names=TRUE)
+locationfilename2 <- head(tail(paths2, 3),1)
 
-scrp <- rbind(scrp1,scrp2,scrp3,scrp4)
+filetimestr <- sub(".csv", "",sub(".*-", "", locationfilename))
+filetime <- strptime(filetimestr,"%Y%m%d%H%M%S")
+filectime <- tail(file.info(paths)$ctime, 1)
+
+scrp <- read.csv(locationfilename, na = "---")
+scrp$DateTime <- as.POSIXct(filetime)
+
+#scrp1 <- read.csv("aptmon-scraping/station-20210926202025.csv", na = "---")
+#scrp2 <- read.csv("aptmon-scraping/station-20210926230837.csv", na = "---")
+#scrp3 <- read.csv("aptmon-scraping/station-20210927093840.csv", na = "---")
+#scrp4 <- read.csv("aptmon-scraping/station-20210927195730.csv", na = "---")
+
+#scrp1$DateTime <- as.POSIXct(strptime("20210926202025","%Y%m%d%H%M%S"))
+#scrp2$DateTime <- as.POSIXct(strptime("20210926230837","%Y%m%d%H%M%S"))
+#scrp3$DateTime <- as.POSIXct(strptime("20210927093840","%Y%m%d%H%M%S"))
+#scrp4$DateTime <- as.POSIXct(strptime("20210927195730","%Y%m%d%H%M%S"))
+
+#scrp <- rbind(scrp1,scrp2,scrp3,scrp4)
 
 #head(scrp)
 #filter(scrp, 地點 == "街坊會聯合總會社區服務大樓")
 
-station <- scrp %>% group_by(序號,地點,類別) %>%
+station <- scrp %>% group_by(序號,Location,類別) %>%
       summarise(
             口採樣點.mean = mean(口採樣點, na.rm = TRUE),
             鼻採樣點.mean = mean(鼻採樣點, na.rm = TRUE),
@@ -42,25 +55,23 @@ station <- scrp %>% group_by(序號,地點,類別) %>%
             鼻採樣點.max = max(鼻採樣點, na.rm = TRUE)
       ) %>% as.data.frame()
 
-colnames(station)[which(names(station) == "地點")] <- "Location"
-head(station)
-
+str(station)
 
 
 # download.file('https://www.ssm.gov.mo/docs/stat/apt/RNA010.xlsx', 'RNA010.xlsx', method='curl' )
 
-## Sept 25
+## Day 1
 
 ### Extract first row for location list
-cnames <- read_excel("RNA010-0928934.xlsx", sheet="20210925A", n_max = 0, na = "---") %>% names()
-lls1 <- cnames[seq(6, length(cnames), 3)]
+cnames <- read_excel(locationfilename2, sheet="20211004A", n_max = 0, na = "---") %>% names()
+lls1 <- sub(".*-", "",cnames[seq(6, length(cnames), 3)])
 ### Extract data from 2nd row 
-rdf1 <- read_excel("RNA010-0928934.xlsx", sheet="20210925A", na = "---", skip = 2) #skip 2 because there exists a hidden row 1 in this spreadsheet
+rdf1 <- read_excel(locationfilename2, sheet="20211004A", na = "---", skip = 2) #skip 2 because there exists a hidden row 1 in this spreadsheet
 sdf1 <- rdf1 %>% select(c(1:2,6:ncol(rdf1))) %>% slice(2:nrow(rdf1)) %>% select(-contains("總人次"))
 ### Repeat Location info for number of rows
 Location <- rep(lls1, each = nrow(sdf1) * 2)
 ### Set date
-sdf1$預約日期 <- as.Date("2021-09-25")
+sdf1$預約日期 <- as.Date("2021-10-04")
 ### Melt to pivot
 sdf1 <- as.data.frame(sdf1)
 mdf1 <- reshape::melt(sdf1, id = c("預約日期", "預約時段"))
@@ -70,18 +81,18 @@ df1 <- cbind(Location,mdf1)
 df1$variable <- sub("\\....*", "", df1$variable)
 
 
-## Sept 26
+## Day 2
 
 ### Extract first row for location list
-cnames <- read_excel("RNA010-0928934.xlsx", sheet="20210926A", n_max = 0, na = "---") %>% names()
-lls2 <- cnames[seq(6, length(cnames), 3)]
+cnames <- read_excel(locationfilename2, sheet="20211005A", n_max = 0, na = "---") %>% names()
+lls2 <- sub(".*-", "",cnames[seq(6, length(cnames), 3)])
 ### Extract data from 2nd row 
-rdf2 <- read_excel("RNA010-0928934.xlsx", sheet="20210926A", na = "---", skip = 1)
+rdf2 <- read_excel(locationfilename2, sheet="20211005A", na = "---", skip = 1)
 sdf2 <- rdf2 %>% select(c(1:2,6:ncol(rdf2))) %>% slice(2:nrow(rdf2)) %>% select(-contains("總人次"))
 ### Repeat Location info for number of rows
 Location <- rep(lls2, each = nrow(sdf2) * 2)
 ### Set date
-sdf2$預約日期 <- as.Date("2021-09-26")
+sdf2$預約日期 <- as.Date("2021-10-05")
 ### Melt to pivot
 sdf2 <- as.data.frame(sdf2)
 mdf2 <- reshape::melt(sdf2, id = c("預約日期", "預約時段"))
@@ -91,18 +102,18 @@ df2 <- cbind(Location,mdf2)
 df2$variable <- sub("\\....*", "", df2$variable)
 
 
-## Sept 27
+## Day 3
 
 ### Extract first row for location list
-cnames <- read_excel("RNA010-0928934.xlsx", sheet="20210927A", n_max = 0, na = "---") %>% names()
-lls3 <- cnames[seq(6, length(cnames), 3)]
+cnames <- read_excel(locationfilename2, sheet="20211006A", n_max = 0, na = "---") %>% names()
+lls3 <- sub(".*-", "",cnames[seq(6, length(cnames), 3)])
 ### Extract data from 2nd row 
-rdf3 <- read_excel("RNA010-0928934.xlsx", sheet="20210927A", na = "---", skip = 1)
+rdf3 <- read_excel(locationfilename2, sheet="20211006A", na = "---", skip = 1)
 sdf3 <- rdf3 %>% select(c(1:2,6:ncol(rdf3))) %>% slice(2:nrow(rdf3)) %>% select(-contains("總人次"))
 ### Repeat Location info for number of rows
 Location <- rep(lls3, each = nrow(sdf3) * 2)
 ### Set date
-sdf3$預約日期 <- as.Date("2021-09-27")
+sdf3$預約日期 <- as.Date("2021-10-06")
 ### Melt to pivot
 sdf3 <- as.data.frame(sdf3)
 mdf3 <- reshape::melt(sdf3, id = c("預約日期", "預約時段"))
@@ -112,30 +123,11 @@ df3 <- cbind(Location,mdf3)
 df3$variable <- sub("\\....*", "", df3$variable)
 
 
-## Sept 28
-
-### Extract first row for location list
-cnames <- read_excel("RNA010-0928934.xlsx", sheet="20210928A", n_max = 0, na = "---") %>% names()
-lls4 <- cnames[seq(6, length(cnames), 3)]
-### Extract data from 2nd row 
-rdf4 <- read_excel("RNA010-0928934.xlsx", sheet="20210928A", na = "---", skip = 1)
-sdf4 <- rdf4 %>% select(c(1:2,6:ncol(rdf4))) %>% slice(2:nrow(rdf4)) %>% select(-contains("總人次"))
-### Repeat Location info for number of rows
-Location <- rep(lls4, each = nrow(sdf4) * 2)
-### Set date
-sdf4$預約日期 <- as.Date("2021-09-28")
-### Melt to pivot
-sdf4 <- as.data.frame(sdf4)
-mdf4 <- reshape::melt(sdf4, id = c("預約日期", "預約時段"))
-### Combine Location with dataset
-df4 <- cbind(Location,mdf4)
-### Clean away column names with ...
-df4$variable <- sub("\\....*", "", df4$variable)
 
 # df4[c(1:62),]
 # filter(df4, Location == "中葡職業技術學校體育館")
 
-df <- rbind(df1,df2,df3,df4)
+df <- rbind(df1,df2,df3)
 df$ReservationDateTime <- as.POSIXlt(paste(df$預約日期, substr(df$預約時段,1,5)))
 df$ReservationCalendarTime <- as.POSIXct(paste(df$預約日期, substr(df$預約時段,1,5)))
 df$ReservationTime <- 
@@ -247,38 +239,37 @@ facet_wrap(~Location, ncol = 2)
 
 
 
-p5 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+p5 <- filter(mdf, Location %in% c("澳門威尼斯人","澳門大學","科大體育館","澳門東亞運體育館A館")) %>%
       group_by(Location,ReservationTime) %>%
       summarise(value.sum = sum(value, na.rm = TRUE))
-p6 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+p6 <- filter(mdf, Location %in% c("澳門威尼斯人","澳門大學","科大體育館","澳門東亞運體育館A館")) %>%
       group_by(Location,ReservationTime) %>%
       summarise(ReservationPerStation = mean(ReservationPerStation, na.rm = TRUE))
 
 g1 <- ggplot(p5,aes(x = ReservationTime, y = value.sum, color = Location)) +
-geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3) +
-  scale_color_viridis_d() +
-  scale_fill_viridis_d()
+geom_point() + geom_smooth(method = lm, alpha = 0.3) +
+  scale_color_viridis_d(option = 'magma', alpha = .7)
 g2 <- ggplot(p6,aes(x = ReservationTime, y = ReservationPerStation, color = Location)) +
-geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3) +
-  scale_color_viridis_d() +
-  scale_fill_viridis_d()
+geom_point() + geom_smooth(method = lm, alpha = 0.3) +
+  scale_color_viridis_d(option = 'magma', alpha = .7)
 
 grid.arrange(g1,g2,nrow=2)
 
-p7 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+
+
+
+p7 <- filter(mdf, Location %in% c("澳門威尼斯人","澳門大學","科大體育館","澳門東亞運體育館A館")) %>%
       group_by(Location,ReservationCalendarTime) %>%
       summarise(value.sum = sum(value, na.rm = TRUE))
-p8 <- filter(mdf, Location %in% c("澳門威尼斯人","工人體育場","澳門保安部隊高等學校","青洲坊活動中心")) %>%
+p8 <- filter(mdf, Location %in% c("澳門威尼斯人","澳門大學","科大體育館","澳門東亞運體育館A館")) %>%
       group_by(Location,ReservationCalendarTime) %>%
       summarise(ReservationPerStation.mean = mean(ReservationPerStation, na.rm = TRUE))
 
 g1 <- ggplot(p7,aes(x = ReservationCalendarTime, y = value.sum, color = Location)) +
 geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3) +
-  scale_color_viridis_d() +
-  scale_fill_viridis_d()
+  scale_color_viridis_d(option = 'magma', alpha = .7)
 g2 <- ggplot(p8,aes(x = ReservationCalendarTime, y = ReservationPerStation.mean, color = Location)) +
 geom_point() + geom_smooth(formula = "y ~ x", alpha = 0.3) +
-  scale_color_viridis_d() +
-  scale_fill_viridis_d()
+  scale_color_viridis_d(option = 'magma', alpha = .7)
 
 grid.arrange(g1,g2,nrow=2)
