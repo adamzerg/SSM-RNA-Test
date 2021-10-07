@@ -319,3 +319,116 @@ $id
 [1] "24be639f-a416-4985-beb0-aaba12413cc9"
 
 [1] TRUE
+'C:/Program' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+'C:/Program' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+'C:/Program' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+Warning message:
+程辑包'XML'是用R版本4.1.1 来建造的 
+Warning message:
+程辑包'RSelenium'是用R版本4.1.1 来建造的 
+Warning message:
+程辑包'netstat'是用R版本4.1.1 来建造的 
+
+载入程辑包：'httpuv'
+
+The following object is masked from 'package:RSelenium':
+
+    startServer
+
+Warning message:
+程辑包'httpuv'是用R版本4.1.1 来建造的 
+checking Selenium Server versions:
+BEGIN: PREDOWNLOAD
+BEGIN: DOWNLOAD
+BEGIN: POSTDOWNLOAD
+checking chromedriver versions:
+BEGIN: PREDOWNLOAD
+BEGIN: DOWNLOAD
+BEGIN: POSTDOWNLOAD
+checking geckodriver versions:
+BEGIN: PREDOWNLOAD
+BEGIN: DOWNLOAD
+BEGIN: POSTDOWNLOAD
+checking phantomjs versions:
+BEGIN: PREDOWNLOAD
+BEGIN: DOWNLOAD
+BEGIN: POSTDOWNLOAD
+[1] "Connecting to remote server"
+$acceptInsecureCerts
+[1] FALSE
+
+$browserName
+[1] "firefox"
+
+$browserVersion
+[1] "92.0.1"
+
+$`moz:accessibilityChecks`
+[1] FALSE
+
+$`moz:buildID`
+[1] "20210922161155"
+
+$`moz:geckodriverVersion`
+[1] "0.30.0"
+
+$`moz:headless`
+[1] FALSE
+
+$`moz:processID`
+[1] 26332
+
+$`moz:profile`
+[1] "C:\\Users\\adam\\AppData\\Local\\Temp\\rust_mozprofileuY19BF"
+
+$`moz:shutdownTimeout`
+[1] 60000
+
+$`moz:useNonSpecCompliantPointerOrigin`
+[1] FALSE
+
+$`moz:webdriverClick`
+[1] TRUE
+
+$pageLoadStrategy
+[1] "normal"
+
+$platformName
+[1] "windows"
+
+$platformVersion
+[1] "10.0"
+
+$proxy
+named list()
+
+$setWindowRect
+[1] TRUE
+
+$strictFileInteractability
+[1] FALSE
+
+$timeouts
+$timeouts$implicit
+[1] 0
+
+$timeouts$pageLoad
+[1] 300000
+
+$timeouts$script
+[1] 30000
+
+
+$unhandledPromptBehavior
+[1] "dismiss and notify"
+
+$webdriver.remote.sessionid
+[1] "4e53384c-87a0-4560-9f94-ee46fb373226"
+
+$id
+[1] "4e53384c-87a0-4560-9f94-ee46fb373226"
+
+[1] TRUE

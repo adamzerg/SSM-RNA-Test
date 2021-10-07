@@ -17,7 +17,8 @@ library(gridExtra)
 
 
 paths <- dir('aptmon-scraping/', full.names=TRUE)
-locationfilename <- tail(paths, 1)
+locationfilename <- "aptmon-scraping/station-20211006205147.csv"
+#locationfilename <- tail(paths, 1)
 paths2 <- dir('RNA010/', full.names=TRUE)
 locationfilename2 <- head(tail(paths2, 3),1)
 
@@ -155,8 +156,7 @@ summary(mdf)
 #df[is.na(df)] <- 0
 
 
-
-#1. 截至結束前六小時，總預約數  
+#1. 總預約數  
 sum(mdf$value,na.rm = TRUE)
 
 #2. 口咽拭約為鼻咽拭的兩倍  

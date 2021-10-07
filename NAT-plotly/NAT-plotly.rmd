@@ -6,7 +6,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message=FALSE, echo = FALSE)
 library(ggmap)
 library(grid)
 library(gridExtra)
@@ -21,15 +21,15 @@ ggmap_hide_api_key()
 
 ## 數據來源  
 
-來源為核酸檢測站，取用採樣點數目參考  
+來源為核酸檢測站，取用採樣點等待人數及等待時間做參考  
 [https://eservice.ssm.gov.mo/aptmon/aptmon/ch]  
 
 
 ## 核酸採樣點的數據準備  
 
-數據更新於以下時間
+當前數據更新於下列時間  
 
-```{r scraped-preparation, message=FALSE, echo=FALSE}
+```{r scraped-preparation}
 paths <- dir('../aptmon-scraping/', full.names=TRUE)
 locationfilename <- tail(paths, 1)
 filetimestr <- sub(".csv", "",sub(".*-", "", locationfilename))
@@ -38,7 +38,11 @@ filectime <- tail(file.info(paths)$ctime, 1)
 filectime
 ```
 
-```{r transform-load-dataset, message=FALSE, echo=FALSE}
+數據清洗包括  
+- 特殊字符處理
+- 地點中文供地圖搜索的優化  
+
+```{r transform-load-dataset}
 scrp <- read.csv(locationfilename, na = "---")
 scrp$MapLoc <- ifelse(scrp$Location == "科大體育館","Macao, 澳門科技大學室內體育館 Gymnasium",scrp$Location)
 scrp[grep(".*工人體育場", scrp$Location, perl=T), ]$MapLoc <- "Macao, 工人體育場館"
@@ -52,7 +56,10 @@ LonLat$area <- ifelse(LonLat$lat>=22.17,'macao','cotai,macao')
 
 ## 地圖  
 
-右側 A/B/C 氣泡為類別，點擊可篩選。氣泡越大表示排隊需時越短。
+拉動區域放大，連續點擊兩次歸位  
+右側 A/B/C 氣泡為檢測站類別，點擊可篩選  
+氣泡越大表示排隊需時越短  
+
 
 ```{r plot-location, message=FALSE}
 plot <- ggmap(get_map(location = "taipa, macao", zoom = 12), darken = .5, 
