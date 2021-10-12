@@ -17,10 +17,10 @@ library(gridExtra)
 
 
 paths <- dir('aptmon-scraping/', full.names=TRUE)
-locationfilename <- "aptmon-scraping/station-20211006205147.csv"
+locationfilename <- "aptmon-scraping/20211004/station-20211006205147.csv"
 #locationfilename <- tail(paths, 1)
-paths2 <- dir('RNA010/', full.names=TRUE)
-locationfilename2 <- head(tail(paths2, 3),1)
+paths2 <- dir('RNA010/20211004/', full.names=TRUE)
+locationfilename2 <- tail(paths2,1)
 
 filetimestr <- sub(".csv", "",sub(".*-", "", locationfilename))
 filetime <- strptime(filetimestr,"%Y%m%d%H%M%S")
@@ -181,6 +181,7 @@ p3 <- mdf %>% group_by(ReservationTime,預約日期) %>% summarise(value.sum = s
 ggplot(p3,aes(x = ReservationTime, y = value.sum, color = value.sum)) +
 geom_line() + facet_grid(預約日期~. )
 
+str(mdf)
 #5. 預約單日的排名  
 p4 <- mdf %>% group_by(Location,預約日期) %>% tally(value) %>% top_n(1) %>% as.data.frame()
 
