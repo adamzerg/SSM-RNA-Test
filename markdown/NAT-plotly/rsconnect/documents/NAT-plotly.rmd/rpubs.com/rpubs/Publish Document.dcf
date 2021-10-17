@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/818302/e3e7638217cc4a2d8da3d7690acb0b16
+bundleId: https://api.rpubs.com/api/v1/document/818302/e3e7638217cc4a2d8da3d7690acb0b16
+url: http://rpubs.com/adamzerg/818302
+when: 1633528152.96475
+lastSyncTime: 1633528152.96475

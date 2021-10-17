@@ -26,7 +26,7 @@ library(tidyr)
 library(gridExtra)
 library(ggmap)
 library(plotly)
-library("GGally")
+library(GGally)
 
 
 
@@ -76,6 +76,7 @@ LonLat$area <- ifelse(LonLat$lat>=22.17,'macao','cotai,macao')
 # 2021-10-05 08:30:00
 # 2021-10-05 09:00:00
 
+unique(station$DateTimeRound)
 
 station <- scrp %>% group_by(序號,Location,類別,DateTimeRound,HourNumber) %>%
       summarise(
@@ -230,6 +231,7 @@ tilevalue <- c(max(filter(lldf, TestPerStation.ntile == 1)$TestPerStation),
 max(filter(lldf, TestPerStation.ntile == 2)$TestPerStation),
 max(filter(lldf, TestPerStation.ntile == 3)$TestPerStation),
 max(filter(lldf, TestPerStation.ntile == 4)$TestPerStation))
+tilevalue
 #, labeller = labeller(setNames(tilevalue, sort(unique(lldf$TestPerStation.ntile))))
 
 fw1 <- ggplot(lldf) + geom_point(aes(x = StationCount.mean, y = TestCount, color = factor(TestDate), alpha = .7)) +
@@ -246,6 +248,8 @@ grid.arrange(fw1,fw2,ncol=2)
 
 #4. 高峰聚集於第二日，24時內各採樣點測試數的動態分佈
 p4 <- lldf %>% filter(TestPerStation.ntile == 4 & TestDate == '2021-10-05')
+summary(p4$TestPerStation)
+
 # Histogram, same result as bubble animation, for check only
 ggplot(p4, aes(x = HourNumber, y = TestCount, color = TestCount, fill = TestCount)) +
 geom_bar(stat = "identity", binwidth = 1, alpha = .5) +
