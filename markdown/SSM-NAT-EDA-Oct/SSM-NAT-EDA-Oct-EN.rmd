@@ -1,5 +1,5 @@
 ---
-title: "2021年澳門第三次全民核酸的分析"
+title: "An Exploratory Data Analysis of Macau's 3rd city-wide Nucleic Acid Testing"
 date: "`r Sys.Date()`"
 author:
 - name: Adam Zheng
@@ -27,49 +27,51 @@ register_google(key = "AIzaSyD9z90fvzxmOhRzoNbxbwOmuIXI6CVKcTE")
 ggmap_hide_api_key()
 ```
 
+## Background  
 
-## 概覽  
+Under COVID-19 pandemic in 2021, when new imported cases is reported, Macau SAR will launch one round of city-wide nucleic tests to prevent the corona-virus from spreading to local communities.  
+This is an exploratory data analysis of Macau's 3rd time city-wide NAT over the period of October 4th 9pm - 7th 9pm.  
+This time Macau Government and the Health Bureau has shorten the overall period, targeting to complete process for over 600k citizens within 48 hours.  
+(There were 8 locations kept swab station working as usual for continuing after the first 48 hour)  
 
-關於澳門第三次全民核酸的初步分析，核酸檢測時間為2021年10月4日9pm -7日9pm  
-因第二次全民核酸已得顯著改善，故第三次核酸的安排鼓勵縮短整體時間至兩日內  
-（第三日僅開放部分八個檢測點以延續正常檢測工作）  
-這裡的分析主要聚焦看前兩日內的各站點壓力表現  
-以每採樣站每採樣點平均半小時採樣數做主要表達  
-
-主要想了解，在整體時間縮短至兩日內的情況下，各站點整體是否負載均衡  
-是否有壓力過高或過低的時段可以改善  
+The questions we seek here are:  
+- What time is the most busy time during day?  
+- If any location is over stressed or too free?  
+- If overall performance is well balanced among each location?  
 
 
-## 數據來源  
+## Data Sources  
   
-1. [網上預約全民核酸檢測人次](https://www.ssm.gov.mo/docs/stat/apt/RNA010.xlsx)  
-來源聲明“截至執行時間為止仍然有效的網上預約全民核酸檢測人次統計”
-這裡的分析且作歷史事實即預約數作實際採樣測驗數看待  
-因非全民核酸期間官方網頁關閉，如需重現分析數據可以於這裡下載  
+1. [City-wide Nucleic Acid Test Booking Stats](https://www.ssm.gov.mo/docs/stat/apt/RNA010.xlsx)  
+As the sources claims the "Number of booking will only be counted when it is valid",
+therefore the number is treated as the fact number of swab done in our analysis.  
+A backup of the data source is available upon requirement:  
 [https://github.com/adamzerg/SSM-RNA-Test/blob/main/RNA010/20211004.7z]  
 
 ![PreventCovid-image-tag](../../image/PreventCOVID-19.PNG)  
 
-2. [澳門抗疫專頁 - 各核酸檢測站的輪候人數情況](https://eservice.ssm.gov.mo/aptmon/aptmon/ch)  
-來源準即時刷新（約為每十分鐘），主要取用採樣點數目作參考  
-因非全民核酸期間官方網頁關閉，如需重現分析數據可以於這裡下載  
+2. [Special webpage against Epidemics - Near real-time waiting stats at each swab station location](https://eservice.ssm.gov.mo/aptmon/aptmon/ch)  
+The source is refreshed about every 10 minutes, source including number of swab stations by nasal / mouth, locations by category, waiting time.  
+A backup of the data source is available upon requirement:  
 [https://github.com/adamzerg/SSM-RNA-Test/blob/main/aptmon-scraping/20211004.7z]
 
 ![Station-image-tag](../../image/aptmon.PNG)  
 
-3. 公式
-採樣站的負荷 = 來源1：該採樣站每半小時檢測數 / 來源2：(口採樣點 + 鼻採樣點)  
+3. Expected Formula  
+Load balance at one location =  
+  Source 1：Number of Swab per 30 minutes / Source 2: (Nasal Swab Desks + Mouth Swab Desks)  
 
 
-## 數據準備  
+## Data Prep  
 
-1. 來源1是預約歷史交易型的Excel，準備工作包括  
-- 選取最後一次歷史記載  
-- 在Excel獨立分頁上循環抽取三日(四分頁)信息  
+1. Source 1 is Excel, preparation including  
+- Select the latest record only  
+- Set a loop to extract information from the specific 4 spreadsheets  
+- Pivot for nasal / mouth swab counts based on granularity time (every 30 minutes)  
 
 ![RNA010-image-tag](../../image/RNA010.PNG)  
 
-```{r ingest-xlsx-booking, message=FALSE}
+```{r ingest-xlsx-booking, include=FALSE, message=FALSE, echo=FALSE}
 filelist2 <- dir('../../RNA010/20211004', full.names=TRUE)
 file2 <- tail(filelist2, 1)
 
@@ -101,8 +103,8 @@ for (sheetname in sheets) {
 }
 ```
 
-- 根據時間粒度(每半小時)轉化旋轉採樣數  
-```{r pivot-booking-dataset}
+
+```{r pivot-booking-dataset, include=FALSE, message=FALSE, echo=FALSE}
 pdf <- df %>% pivot_wider(names_from = variable, values_from = value)
 pdf <- as.data.frame(pdf)
 pdf$SwabCount <- rowSums(pdf[ ,c("口咽拭", "鼻咽拭")], na.rm=TRUE)
@@ -127,10 +129,11 @@ pdf <- pdf %>%
 str(pdf)
 ```
 
-2. 來源2是準實時刷新抓取頁面容器內的表標記，準備工作包括
-- 讀取所有源數據  
+2. Source 2 is web scraped by setting schedule, preparation including  
+- Batch load in once for all scraped histories  
+- Add for time format for convenience  
 
-```{r ingest-scraped-dataset, message=FALSE}
+```{r ingest-scraped-dataset, include=FALSE, message=FALSE, echo=FALSE}
 filelist <- dir('../../aptmon-scraping/20211004', full.names=TRUE)
 scrp <- data.frame()
 for (file in filelist) {
@@ -142,9 +145,7 @@ for (file in filelist) {
 }
 ```
 
-- 清洗轉化時間/人數/分鐘的格式  
-
-```{r trans-scraped-dataset, message=FALSE, warning=FALSE, error=FALSE}
+```{r trans-scraped-dataset, include=FALSE, message=FALSE, echo=FALSE}
 attr(scrp$DateTime, "tzone") <- "GMT"
 scrp$DateTimeRound <- round(scrp$DateTime, "30mins")
 scrp$WaitingQueue <- as.numeric(as.character(sub("*人", "", scrp$輪候人數)))
@@ -161,13 +162,13 @@ str(scrp)
 ```
 
 
-## 數據整合  
+## Data Wrangling  
 
-1. 來源2為準實時抓取，需要去重同時找平均數/中位數  
-- 有三個時間點因抓取的技術問題缺失，分別為 10-05 6am / 8:30 am / 9am  
-- 這裡的修復僅取前一個值做填補  
+1. Since Source 2 are scraped from near real time, need to:  
+- Deduplicate for 30 minutes duration, and determine count / measures with their median value  
+- Backfill 3 missing timeframe at Oct-05 6am / 8:30 am / 9am  
 
-```{r mean-station-dataset, message=FALSE}  
+```{r mean-station-dataset, include=FALSE, message=FALSE, echo=FALSE}
 station <- scrp %>% group_by(序號,Location,類別,DateTimeRound,HourNumber) %>%
       summarise(
             DeskCount.mean = mean(DeskCount, na.rm = TRUE),
@@ -205,8 +206,9 @@ station <- station %>%
 
 ```
 
-2. 來源2內可以進一步提取地點信息取坐標，結合作地圖定位  
-```{r trans-lonlat-dataset, message=FALSE}
+2. Extract geolocation information  
+
+```{r trans-lonlat-dataset, include=FALSE, message=FALSE, echo=FALSE}
 LonLat <- unique(scrp[c("Location")])
 LonLat$MapLoc <- ifelse(LonLat$Location == "科大體育館","Macao, 澳門科技大學室內體育館 Gymnasium",LonLat$Location)
 LonLat[grep(".*工人體育場", LonLat$Location, perl=T), ]$MapLoc <- "Macao, 工人體育場館"
@@ -216,9 +218,9 @@ LonLat$area <- ifelse(LonLat$lat>=22.17,'Macao','Taipa')
 str(LonLat)
 ```
 
-3. 將來源2的採樣站和地點坐標，與來源1連接合併作一個數據集，需留意來源1僅包含自B類採樣站，故合併後的數據集僅存有B類採樣站  
+3. Merge two sources into one, only category B remains after merged  
 
-```{r binding-dataset}  
+```{r binding-dataset, include=FALSE, message=FALSE, echo=FALSE}
 ldf <- merge(LonLat, pdf)
 mdf <- merge(station, pdf, by = c("Location","DateTimeRound","HourNumber"))
 mdf <- mdf %>%
@@ -238,20 +240,21 @@ lldf <- merge(LonLat, mdf)
 ```
 
 
-## 初步分析  
+## Preliminary Analysis   
 
-1. 基本比例  
+1. Fact Ratios  
 
-- 來源1內的總預約數(僅B類別)  
-```{r sum-total}  
+- Total bookings is 627,865 from source 1, i.e. Category B (General Station) only  
+
+```{r sum-total, include=FALSE, message=FALSE, echo=FALSE}
 sum(pdf$SwabCount,na.rm = TRUE)
 
 ```
 
-- 口咽拭約為鼻咽拭的2.3倍  
-- 澳門半島的預約總和約為氹仔路環區的2.8倍  
+- The mouth swab total is about 2.3 times than nasal swab  
+- Total swab in Macau peninsula is about 2.8 times than Taipa plus Coloane  
 
-```{r base-ratio, warning=FALSE, message=FALSE}  
+```{r base-ratio, warning=FALSE, message=FALSE, echo=FALSE}
 options("scipen" = 100, "digits" = 4)
 
 p1 <- df %>% group_by(variable) %>% summarise(value.sum = sum(value, na.rm = TRUE))
@@ -273,11 +276,11 @@ g2 <- ggplot(data=p2, aes(x = reorder(area,n), y = n, fill = area)) +
 grid.arrange(g1, g2, ncol = 1, top = "Total Swabs by Method / Location Area")
 ```
 
-2. 24時的四分位分佈  
+2. When time is the most busiest time in a day?  
 
-- 四分位設於每採樣點半小時檢測數，四分位值為  
+- Set quartile value based on number of swab per station  
 
-```{r quartile-value}  
+```{r quartile-value, include=FALSE, message=FALSE, echo=FALSE}
 tilevalue <- c(max(filter(mdf, SwabPerDesk.ntile == 1)$SwabPerDesk),
 max(filter(mdf, SwabPerDesk.ntile == 2)$SwabPerDesk),
 max(filter(mdf, SwabPerDesk.ntile == 3)$SwabPerDesk),
@@ -285,11 +288,12 @@ max(filter(mdf, SwabPerDesk.ntile == 4)$SwabPerDesk))
 tilevalue
 ```
 
-- 一分位趨與夜間，二三分位相較平均在日間  
-- 值得留意四分位有三個高位在 7am / 1pm / 8pm，出現45次以上  
-- 該三個高位繁忙時段具日間作息代表性，或可考慮按時段需求增設檢測點  
+- The 1st tile has most count overnight, and the 2nd and 3rd mostly appears by daytime  
+- Note for the 4th tile, 3 peaks goes to 7am / 1pm / 8pm, each appears for more than 45 times  
+- The 3 peak times matched to people's peak working hour during a day  
+- Should consider to increase number of stations / swab desks for the specific time frame  
 
-```{r quartile-24hour, warning=FALSE, message=FALSE}  
+```{r quartile-24hour, warning=FALSE, message=FALSE, echo=FALSE}
 fl <- as_labeller(
      c(`1` = "below 27 swap/desk", `2` = "below 33 swap/desk",`3` = "below 42 swap/desk", `4` = "below 122 swap/desk"))
 
@@ -303,12 +307,12 @@ ggplot(mdf, aes(x = HourNumber, fill = factor(DurationDayNumber))) +
   ggtitle("Swap per desk in 4-tiles, 24 hours")
 ```
 
-3. 採樣站  
+3. Location stats  
 
-- 預約排名前置有威尼斯人,工人體育場,鏡平,鏡湖,文化中心
-- 單日分佈預約均聚集於10月5日  
+- From total bookings top 5, there are Venetian Cotai Arena, Workers Stadium, Keang Peng Middle School, Kiang Wu Hospital Auditorium, Macao Cultural Centre  
+- The distribution appears mostly tend to day 1  
 
-```{r daily-booking-ranking, warning=FALSE, message=FALSE}  
+```{r daily-booking-ranking, warning=FALSE, message=FALSE, echo=FALSE}
 p3 <- pdf %>% group_by(Location, DurationDayNumber) %>% tally(SwabCount)
 
 ggplot(p3, aes(x = reorder(Location, n), y = n, fill = factor(DurationDayNumber))) +
@@ -318,12 +322,11 @@ ggplot(p3, aes(x = reorder(Location, n), y = n, fill = factor(DurationDayNumber)
   ggtitle("Total swabs by location") + xlab("Location") + ylab("Swab Counts")
 ```
 
-- 各站點採樣點的數量變化  
-- 有高離群值出現在工人體育場10個增至23個，健康生活教育園地6個增至13個  
-- 同時可見鏡平及鏡湖偶有向下調整  
+- Number of swab desks varies  
+- Outlier can be seen for Worker Stadium, once increased from 10 to 23  
+- The adjustment down at Keang Peng Middle School, Kiang Wu Hospital Auditorium  
 
-```{r avgdesk-value, warning=FALSE, message=FALSE}  
-
+```{r avgdesk-value, warning=FALSE, message=FALSE, echo=FALSE}
 ggplot(mdf, aes(x = reorder(Location, AvgDeskCount), y = DeskCount.mean, fill = AvgDeskCount)) +
   geom_boxplot(alpha = .7) +
   coord_flip() +
@@ -333,10 +336,9 @@ ggplot(mdf, aes(x = reorder(Location, AvgDeskCount), y = DeskCount.mean, fill = 
 
 ```
 
-4. 採樣站負載  
-- 採樣站五分位熱圖轉化準備  
+4. Station load balance  
 
-```{r prop-heatmap-pivot}  
+```{r prop-heatmap-pivot, include=FALSE, message=FALSE, echo = FALSE}  
 prdf <- mdf %>% 
   group_by(Location, DeskCount.ntile) %>% 
   summarise(SwabCountByDesk = sum(SwabCount, na.rm = TRUE)) %>% 
@@ -359,10 +361,11 @@ prdf <- mdf %>%
   )
 ```
 
-- 依各站自身採樣點歸五分位後排列熱圖  
-- 氹仔採樣數多趨於高分位採樣點完成，例北安碼頭，威尼斯人，東亞運  
+- Sort heatmap on the 5th tile swab count proportion by number of desks  
+- The 5tile is set against each location, to number of desks  
+- Why for taipa most swab were done at the 5th tile? e.g. Pac On Ferry Terminal, Venetian Cotai Arena, East Asian Games Dome  
 
-```{r prop-heatmap, warning=FALSE, message=FALSE}  
+```{r prop-heatmap, warning=FALSE, message=FALSE, echo=FALSE}
 ggplot(prdf, aes(DeskCount.ntile, Location)) +
   geom_tile(aes(fill = prop), alpha = .7) +
   geom_text(aes(label = scales::percent(prop, accuracy = 1)), size = 3) +
@@ -372,9 +375,7 @@ ggplot(prdf, aes(DeskCount.ntile, Location)) +
 
 ```
 
-- 採樣站五分位熱圖轉化準備2  
-
-```{r location-heatmap-dataset}  
+```{r location-heatmap-dataset, warning=FALSE, message=FALSE, echo=FALSE}
 #unique(mdf[c("Location", "AvgSwabPerDesk")]) %>% arrange(-AvgSwabPerDesk)
 
 pldf1 <- mdf[c("Location", "DateTimeRound", "DurationHour","口咽拭", "鼻咽拭")] %>% 
@@ -402,12 +403,11 @@ pldf <- rbind(pldf1, pldf2) %>%
   ungroup()
 ```
 
-- 選擇採樣站，看完整二日的採樣表現（部分站點有三日）  
-- 第一組澳門採樣站，前三個站點表現平穩，
-- 不論拭子採樣方式，均有增減大致符合檢測數變動
-- 綜藝館波幅變動大受壓明顯，但採樣枱數並無合理調整  
+- Preview set of 4 stations in Macau over the complete 48 hour (some runs over 48 hr)  
+- At Mong-Ha Sports Centre, Keang Peng Middle School, Worker Stadium, no matter which swab method there are increase and decrease adjustment in swab desk along with swab counts  
+- Macau Forum however has fluctuated swab counts, but rarely has any adjustment in swab desks  
 
-```{r explore-location-set1, warning=FALSE, message=FALSE}  
+```{r explore-location-set1, warning=FALSE, message=FALSE, echo=FALSE}
 s1 <- c("綜藝館(免費)","鏡平學校（中學部）","望廈體育中心1樓","工人體育場")
 
 sh1 <- filter(pldf, Location %in% s1) %>%
@@ -430,13 +430,12 @@ sb1 <- filter(mdf, Location %in% s1) %>%
 grid.arrange(sh1, sb1, nrow = 1, top = "Set of 4 locations from Macao area in 3 days")
 ```
 
-- 第二組四氹仔採樣站  
-- 深淺間隔代表檢測數和測試站不等比偶有發生，需加留意  
-- 威尼斯人及東亞運可見激增高峰位但不同時段，或可考慮應急資源置換  
-- 氹仔整體而言第二日較第一日無壓力，亦解答為何氹仔採樣數多趨於高分位採樣點完成
-- 或可考慮在澳門半島做引流需要  
+- Preview set of 4 stations in Taipa over the complete 48 hour (some runs over 48 hr)  
+- There are darker and lighter intervals one after each in number of swab desks vs swab done, means they were not in a consist ratio  
+- Some spikes appears for Venetian Cotai Arena and East Asian Games Dome but in different time frame, could consider supporting each other in due time  
+- The 2nd day overall has less stressed than the 1st in Taipa, which explained why the distribution appears mostly tend to be in day 1, should consider for supporting Macau, or make redirection for the crowd go Taipa by day 2  
 
-```{r explore-location-set2, warning=FALSE, message=FALSE}  
+```{r explore-location-set2, warning=FALSE, message=FALSE, echo=FALSE}
 s2 <- c("北安客運碼頭","澳門威尼斯人","澳門東亞運體育館A館","奧林匹克體育中心-運動場-室內體育館")
 
 sh2 <- filter(pldf, Location %in% s2) %>%
@@ -459,15 +458,15 @@ sb2 <- filter(mdf, Location %in% s2) %>%
 grid.arrange(sh2, sb2, nrow = 1, top = "Set of 4 locations from Cotai area in 3 days")
 ```
 
-5. 地圖動態  
+5. Map  
 
-- 48小時內各採樣點採樣數的動態分佈  
-- 泡泡的大小為每採樣點採樣數動態僅取第四分位
-- 基本反映前两个個高位第 10 / 16 小時（10月6日 7am / 1pm）  
-- 第31-36小時反映高位偏聚集澳门半岛（10月7日 4am -9am）   
-- 第47小時（10月7日8pm）出現最後一高位  
+- An animation for the 4th quartile swab per desk to each location within 48 hours  
+- Bubble size representing swab per desk  
+- Reflecting well the peak time by the 10th / 16th hour (Oct-06 7am / 1pm)  
+- The 31st -36th hour crowd appears only in Macau peninsula (Oct-07 4am - 9am)  
+- A notable crowd appears right by the 47th hour (Oct-07 8pm)  
 
-```{r lonlat-ggplotly-set1, warning=FALSE, message=FALSE}  
+```{r lonlat-ggplotly-set1, warning=FALSE, message=FALSE, echo=FALSE}
 p4 <- lldf %>% filter(SwabPerDesk.ntile == 4)
 
 plot <- ggmap(get_map(location = "taipa, macao", zoom = 12), darken = .5, 
@@ -480,38 +479,28 @@ ggplotly(plot)
 ```
 
 
-威尼斯人採樣站點第二日實景，較第一日為空閒  
+By Venetian Cotai Arena, 2nd day is less stressed comparing to the 1st day  
 
 ![Venetian-image-tag](../../image/20211006_124845.jpg)  
 
-預設約20採樣點，於第二日中午調整至僅需開放 5-6 採樣點供基本均無需等待  
+There are about 20 swab desks, by 2nd day noon only 5-6 is operating and there is nearly no waiting queue  
 
 ![Venetian-image2-tag](../../image/20211006_124848.jpg)  
 
-## 總結  
-- 採樣站的負荷即單點採樣數可作為指標參考每個站點的負載均衡,均數33以下較理想   
-- 相應可以做的改善包括作息需求可以針對24小時均衡做調度調整
-- 已知預約數情況下做測試點採樣點的人員調度以保證均衡
-- 動態控制各站點可預約數以減少人員及其他資源的調度
+
+## Summary  
+- We can use Swab per desk by every 30 minutes as a measure to review the load balance to each station, ideally this number is under 33  
+- Potential improvement can be made, if we can increase the swab desks in station during peak rush hours  
+- Relocating more / less staff depending on the next hour booking numbers  
+- Limit for number of bookings for an upcoming time in case if shortage, also avoid relocation of staffs  
 
 
-## 其他  
-- 將來源2的即時等待人數和等待時間放到來源1預約數和單採樣站點採樣數內做配對  
-- 每採樣站採樣數的四分位作顏色標籤  
-- 散點圖中隊伍等待人數和等待時間相關性0.797，預約數和單採樣站點數相關性0.773  
-- 該兩配對的四分位標籤的分佈情況大致符合，即單點採樣數與即時等待人數和時間基本正比
-
-
-```{r pairs-waiting}  
-ggpairs(mdf[c("WaitingQueue.mean","WaitingMinutes.mean","SwabCount","DeskCount.mean")], 
-        aes(color = factor(mdf$SwabPerDesk.ntile), alpha = .3))
-```
-
-
-## 更多資料參考  
+## Reference
 [8個常規核酸檢測站在全民核酸檢測結束後將重新開放並延長服務時間](https://www.ssm.gov.mo/docs/20257/20257_113648d57b4a4aa3b1cc4265ec112902_000.pdf)  
 [今(4)日晚上9時至10月7日晚上9時進行第三次全民核酸檢測](https://www.ssm.gov.mo/docs/20291/20291_f2153a77511c40619660cc7c7764a661_000.pdf)  
 [第 3 次較第 2 次全民核檢首 3 小時採樣人數多 各個採樣站點的輪候情況理想](https://www.ssm.gov.mo/docs/file/20318/)  
 
 
 ![qr-tag](../../image/qr.jpg)  
+
+
