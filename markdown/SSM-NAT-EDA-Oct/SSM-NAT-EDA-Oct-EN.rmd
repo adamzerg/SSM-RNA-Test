@@ -20,10 +20,12 @@ library(gridExtra)
 library(ggmap)
 library(plotly)
 library(GGally)
+library(jsonlite)
 ```
 
 ```{r map-api-key-setup, include=FALSE, message=FALSE, echo = FALSE}
-register_google(key = "AIzaSyD9z90fvzxmOhRzoNbxbwOmuIXI6CVKcTE")
+google_map_key <- fromJSON("../../keys.json")$google_map_key
+register_google(google_map_key)
 ggmap_hide_api_key()
 ```
 
